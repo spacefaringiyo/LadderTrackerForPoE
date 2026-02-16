@@ -10,6 +10,7 @@ import os
 import re
 import sys
 import time
+import urllib.parse
 import urllib.request
 import urllib.error
 from collections import defaultdict
@@ -18,7 +19,9 @@ from collections import defaultdict
 # Configuration
 # ---------------------------------------------------------------------------
 LEAGUE = os.environ.get("POE_LEAGUE", "Standard")
-API_URL = f"https://api.pathofexile.com/ladders/{LEAGUE}?limit=200"
+# Space-safe URL encoding for the league name
+QUOTED_LEAGUE = urllib.parse.quote(LEAGUE)
+API_URL = f"https://api.pathofexile.com/ladders/{QUOTED_LEAGUE}?limit=200"
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 PLAYERS_DIR = os.path.join(DATA_DIR, "players")
 

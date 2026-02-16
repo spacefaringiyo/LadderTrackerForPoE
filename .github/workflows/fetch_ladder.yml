@@ -12,7 +12,7 @@ on:
         default: 'Standard'
 
 env:
-  POE_LEAGUE: ${{ github.event.inputs.league || 'Standard' }}
+  POE_LEAGUE: ${{ github.event.inputs.league || 'Hardcore Phrecia 2.0' }}
 
 jobs:
   fetch:
