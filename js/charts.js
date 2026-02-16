@@ -19,7 +19,7 @@ if (typeof Chart !== 'undefined') {
 var _lastDetailHistory = null;
 var _lastDetailDeaths = null;
 var _lastDetailHasDepth = false;
-
+var _lastDetailPlayer = null;
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------

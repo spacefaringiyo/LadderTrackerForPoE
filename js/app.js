@@ -491,28 +491,18 @@ function renderDetail(player, historyData) {
     const body = document.getElementById('detail-body');
     const toggles = document.getElementById('detail-toggles');
     const deaths = detectDeaths(history);
-
-    // Stats
-    const totalGain = history.length > 1 ? history[history.length - 1].x - history[0].x : 0;
-    const hours = history.length > 1 ? (history[history.length - 1].t - history[0].t) / 3600 : 0;
-    const avgXph = hours > 0 ? totalGain / hours : 0;
     const hasDepth = history.some(s => s.d != null);
-    const maxDepth = hasDepth ? Math.max(...history.filter(s => s.d != null).map(s => s.d)) : null;
     const cc = CLASS_COLORS[player.class] || '#999';
+
+    // Save for re-renders on toggle change
+    _lastDetailPlayer = player;
 
     body.innerHTML = `
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
       <span class="class-dot" style="background:${cc};width:10px;height:10px"></span>
       <span style="color:var(--text-secondary);font-size:0.8rem;">${player.class} · Lvl ${player.level} · ${player.account || ''} ${player.dead ? '· <span style="color:var(--red)">💀 Dead</span>' : ''}</span>
     </div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-label">Current XP</div><div class="stat-value gold">${formatXP(player.experience)}</div></div>
-      <div class="stat-card"><div class="stat-label">XP Gained</div><div class="stat-value">${formatXP(totalGain)}</div></div>
-      <div class="stat-card"><div class="stat-label">Avg XP/h</div><div class="stat-value green">${formatXP(Math.round(avgXph))}</div></div>
-      <div class="stat-card"><div class="stat-label">Deaths</div><div class="stat-value ${deaths.length ? 'red' : ''}">${deaths.length}</div></div>
-      ${hasDepth ? `<div class="stat-card"><div class="stat-label">Max Depth</div><div class="stat-value gold">${formatNumber(maxDepth)}</div></div>` : ''}
-      <div class="stat-card"><div class="stat-label">Snapshots</div><div class="stat-value">${history.length}</div></div>
-    </div>
+    <div class="stats-grid" id="detail-stats-grid"></div>
     <div class="charts-row">
       <div class="chart-box"><h4>Experience</h4><div class="chart-canvas-wrap"><canvas id="detail-xp-chart"></canvas></div></div>
       <div class="chart-box"><h4>XP Rate</h4><div class="chart-canvas-wrap"><canvas id="detail-rate-chart"></canvas></div></div>
@@ -522,7 +512,9 @@ function renderDetail(player, historyData) {
 
     toggles.style.display = '';
 
-    // Render charts via charts.js
+    // Render stats & charts
+    updateDetailStats(history, deaths, player, hasDepth);
+
     if (typeof renderDetailCharts === 'function') {
         renderDetailCharts(history, deaths, hasDepth, App.detailRateInterval, App.detailTimeRange);
     }
@@ -530,6 +522,31 @@ function renderDetail(player, historyData) {
     // Restore toggle active states
     restoreToggleState('detail-rate-toggle', 'data-interval', App.detailRateInterval);
     restoreToggleState('detail-range-toggle', 'data-range', App.detailTimeRange);
+}
+
+function updateDetailStats(history, deaths, player, hasDepth) {
+    const grid = document.getElementById('detail-stats-grid');
+    if (!grid) return;
+
+    // Apply time range filter to stats
+    const filtered = (typeof filterByTimeRange === 'function')
+        ? filterByTimeRange(history, App.detailTimeRange)
+        : history;
+    const filteredDeaths = deaths.filter(d => filtered.some(s => s.t === d.timestamp));
+
+    const totalGain = filtered.length > 1 ? filtered[filtered.length - 1].x - filtered[0].x : 0;
+    const hours = filtered.length > 1 ? (filtered[filtered.length - 1].t - filtered[0].t) / 3600 : 0;
+    const xph = hours > 0 ? totalGain / hours : 0;
+    const maxDepth = hasDepth ? Math.max(...filtered.filter(s => s.d != null).map(s => s.d)) : null;
+
+    grid.innerHTML = `
+      <div class="stat-card"><div class="stat-label">Current XP</div><div class="stat-value gold">${formatXP(player.experience)}</div></div>
+      <div class="stat-card"><div class="stat-label">XP Gained</div><div class="stat-value">${formatXP(totalGain)}</div></div>
+      <div class="stat-card"><div class="stat-label">XP/h</div><div class="stat-value green">${formatXP(Math.round(xph))}</div></div>
+      <div class="stat-card"><div class="stat-label">Deaths</div><div class="stat-value ${filteredDeaths.length ? 'red' : ''}">${filteredDeaths.length}</div></div>
+      ${hasDepth ? `<div class="stat-card"><div class="stat-label">Max Depth</div><div class="stat-value gold">${formatNumber(maxDepth)}</div></div>` : ''}
+      <div class="stat-card"><div class="stat-label">Snapshots</div><div class="stat-value">${filtered.length}</div></div>
+    `;
 }
 
 // ---------------------------------------------------------------------------
@@ -795,6 +812,10 @@ function setupToggleGroup(containerId, attr, onChange) {
 
 function rerenderDetailCharts() {
     if (typeof _lastDetailHistory !== 'undefined' && _lastDetailHistory) {
+        // Update stats to match the new time range
+        if (_lastDetailPlayer) {
+            updateDetailStats(_lastDetailHistory, _lastDetailDeaths, _lastDetailPlayer, _lastDetailHasDepth);
+        }
         renderDetailCharts(_lastDetailHistory, _lastDetailDeaths, _lastDetailHasDepth,
             App.detailRateInterval, App.detailTimeRange);
     }
