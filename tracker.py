@@ -13,6 +13,7 @@ import time
 import urllib.parse
 import urllib.request
 import urllib.error
+import hashlib
 from collections import defaultdict
 
 # ---------------------------------------------------------------------------
@@ -40,9 +41,17 @@ INTERVALS = {
 
 def safe_filename(name: str) -> str:
     """Convert a character name to a filesystem-safe filename."""
+    # standard ascii sanitization
     safe = re.sub(r'[^\w\-]', '_', name, flags=re.ASCII)
     safe = re.sub(r'_+', '_', safe).strip('_')
-    return safe if safe else "unknown"
+    
+    # If name became empty (e.g. non-ASCII) or we want to ensure uniqueness
+    if not safe:
+        # Create a stable hash based on the original name
+        h = hashlib.md5(name.encode("utf-8")).hexdigest()[:8]
+        return f"player_{h}"
+        
+    return safe
 
 
 def fetch_ladder() -> dict:
@@ -316,6 +325,16 @@ def update_player_history(entry: dict, timestamp: int) -> bool:
 
         if last_xp == xp and last_depth == depth and last_dead == dead:
             return False  # No change
+        
+        # API Stability Check: 
+        # If XP drops by a massive amount (>500M), assume it's a glitch/desync/overflow
+        # and do NOT corrupt our history with it.
+        # (Lvl 100 death penalty is ~425M, so 500M is a safe threshold)
+        if xp < last_xp:
+            drop = last_xp - xp
+            if drop > 500_000_000:
+                print(f"WARN: Identifying massive XP drop for {char_name} ({last_xp} -> {xp}, diff: -{drop}). Ignoring.")
+                return False
 
     history.append(snapshot)
     player_data["history"] = history
