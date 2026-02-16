@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Path of Exile Ladder Tracker — Track top 200 players, compare XP progression, and detect deaths in real time.">
+  <title>PoE Ladder Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div class="dashboard">
+
+    <!-- ===== Top Bar ===== -->
+    <header class="top-bar">
+      <h1 class="app-title">PoE Ladder Tracker <span>— Top 200</span></h1>
+      <div class="top-bar-right">
+        <div class="refresh-indicator" id="refresh-indicator" title="Auto-refreshes every 5 min">
+          <span class="refresh-dot"></span>
+          <span>Live</span>
+        </div>
+        <span class="league-badge" id="league-badge">…</span>
+        <span class="last-updated" id="last-updated"></span>
+      </div>
+    </header>
+
+    <!-- ===== Main Content (Left + Handle + Right) ===== -->
+    <div class="main-content">
+
+      <!-- ===== LEFT: Ladder Panel ===== -->
+      <div class="ladder-panel" id="ladder-panel">
+
+        <!-- Toolbar -->
+        <div class="ladder-toolbar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Search…" autocomplete="off">
+          </div>
+
+          <!-- Interval Toggle -->
+          <div class="toggle-group" id="ladder-interval-toggle">
+            <button data-interval="1h" class="active">1h</button>
+            <button data-interval="4h">4h</button>
+            <button data-interval="12h">12h</button>
+            <button data-interval="1d">1d</button>
+            <button data-interval="3d">3d</button>
+          </div>
+
+          <!-- Right side actions -->
+          <div style="display:flex; gap: 8px; align-items: center;">
+            <!-- Meta Toggle -->
+            <button class="btn-icon" id="meta-toggle-btn" title="Toggle Class Distribution">📊</button>
+
+            <!-- Column settings -->
+            <div style="position:relative;">
+              <button class="settings-btn" id="settings-btn" title="Column visibility">⚙</button>
+              <div class="settings-dropdown" id="settings-dropdown">
+                <label><input type="checkbox" data-col="col-xph" checked> XP/h</label>
+                <label><input type="checkbox" data-col="col-status" checked> Status</label>
+                <label><input type="checkbox" data-col="col-depth" checked> Depth</label>
+                <label><input type="checkbox" data-col="col-twitch" checked> Twitch</label>
+                <label><input type="checkbox" data-col="col-challenges" checked> Challenges</label>
+                <label><input type="checkbox" data-col="col-account" checked> Account</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Class Distribution (Hidden by default) -->
+        <div class="meta-distribution" id="meta-distribution" style="display:none;">
+          <!-- Injected via JS -->
+        </div>
+
+        <!-- Class filters -->
+        <div class="class-filter-row" id="class-filters"></div>
+
+        <!-- Table -->
+        <div class="ladder-scroll">
+          <table class="ladder-table" id="ladder-table">
+            <thead>
+              <tr>
+                <th class="cell-cb"><input type="checkbox" id="select-all" title="Select all"></th>
+                <th data-sort="rank" class="sort-active">Rank <span class="sort-arrow">▲</span></th>
+                <th data-sort="name">Name <span class="sort-arrow"></span></th>
+                <th data-sort="class">Class <span class="sort-arrow"></span></th>
+                <th data-sort="level">Lvl <span class="sort-arrow"></span></th>
+                <th data-sort="experience">XP <span class="sort-arrow"></span></th>
+                <th data-sort="xp_per_hour" class="col-xph">XP/h <span class="sort-arrow"></span></th>
+                <th data-sort="depth" class="col-depth">Depth <span class="sort-arrow"></span></th>
+                <th class="col-status">Status</th>
+                <th class="col-twitch">Twitch</th>
+                <th class="col-challenges">Chall.</th>
+              </tr>
+            </thead>
+            <tbody id="ladder-body"></tbody>
+          </table>
+        </div>
+
+        <!-- Footer -->
+        <div class="ladder-footer">
+          <span class="selected-info" id="selected-info">Click a row to view details</span>
+          <button class="btn btn-primary btn-sm" id="compare-btn" disabled>⚔ Compare</button>
+        </div>
+      </div>
+
+      <!-- ===== Horizontal Resize Handle ===== -->
+      <div class="h-resize-handle" id="h-resize-handle"></div>
+
+      <!-- ===== RIGHT: Detail + Comparison Panels ===== -->
+      <div class="right-panel" id="right-panel">
+
+        <!-- ----- Player Detail Panel ----- -->
+        <div class="detail-panel" id="detail-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span>📋 Player Detail</span>
+              <span class="panel-title-name" id="detail-player-name"></span>
+            </div>
+            <div class="panel-header-actions" id="detail-actions">
+              <div class="toggle-row" id="detail-toggles" style="display:none;">
+                <span class="toggle-label">Rate:</span>
+                <div class="toggle-group" id="detail-rate-toggle">
+                  <button data-interval="600" class="active">10m</button>
+                  <button data-interval="1800">30m</button>
+                  <button data-interval="3600">1h</button>
+                </div>
+                <span class="toggle-label">Range:</span>
+                <div class="toggle-group" id="detail-range-toggle">
+                  <button data-range="86400">1d</button>
+                  <button data-range="259200">3d</button>
+                  <button data-range="604800">1w</button>
+                  <button data-range="0" class="active">All</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-body" id="detail-body">
+            <div class="empty-panel">
+              <div class="empty-icon">📊</div>
+              <p>Select a player to view details</p>
+              <span class="empty-hint">Click any row in the ladder</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ----- Resize Handle ----- -->
+        <div class="panel-resize-handle" id="panel-resize-handle"></div>
+
+        <!-- ----- Comparison Panel ----- -->
+        <div class="compare-panel" id="compare-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span>⚔ Comparison</span>
+              <span style="font-size:0.7rem;color:var(--text-muted);font-weight:400;" id="compare-count"></span>
+            </div>
+            <div class="panel-header-actions">
+              <div class="toggle-row" id="compare-toggles" style="display:none;">
+                <span class="toggle-label">Rate:</span>
+                <div class="toggle-group" id="compare-rate-toggle">
+                  <button data-interval="600" class="active">10m</button>
+                  <button data-interval="1800">30m</button>
+                  <button data-interval="3600">1h</button>
+                </div>
+                <span class="toggle-label">Range:</span>
+                <div class="toggle-group" id="compare-range-toggle">
+                  <button data-range="86400">1d</button>
+                  <button data-range="259200">3d</button>
+                  <button data-range="604800">1w</button>
+                  <button data-range="0" class="active">All</button>
+                </div>
+              </div>
+              <button class="btn btn-ghost btn-sm" id="clear-compare-btn" style="display:none;">✕ Clear</button>
+            </div>
+          </div>
+          <div class="panel-body" id="compare-body">
+            <div class="empty-panel">
+              <div class="empty-icon">⚔</div>
+              <p>Select 2+ players to compare</p>
+              <span class="empty-hint">Use the checkboxes, then click Compare</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/compare.js"></script>
+</body>
+
+</html>

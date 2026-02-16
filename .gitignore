@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.DS_Store
+.venv
+env/
+.idea/
+.vscode/
+
+# We want data/ in the repo because GitHub Actions updates it
+# but you might want to clear it before pushing if you have mock data
+# data/players/*
+# data/current_ladder.json
+# data/metadata.json

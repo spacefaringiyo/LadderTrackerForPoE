@@ -1,0 +1,120 @@
+{
+  "total": 15000,
+  "entries": [
+    {
+      "rank": 1,
+      "dead": false,
+      "public": true,
+      "character": {
+        "id": "8674d2e0a0d350b81287999529cb79b0b0007059083a65610bcb128362c5a863",
+        "name": "CHUCHU_STAINING",
+        "level": 100,
+        "class": "Ascendant",
+        "experience": 4250334444
+      },
+      "account": {
+        "name": "cutiechuchu#6132",
+        "challenges": {
+          "set": "Chayula",
+          "completed": 7,
+          "max": 40
+        },
+        "twitch": {
+          "name": "chuchupoe"
+        }
+      }
+    },
+    {
+      "rank": 2,
+      "dead": false,
+      "character": {
+        "id": "2bb6b6725d3f67587a3cf01ea16a1e972faf8a735280ec3db0f48fb2c336af80",
+        "name": "MICS_STAINING",
+        "level": 100,
+        "class": "Deadeye",
+        "experience": 4250334444
+      },
+      "account": {
+        "name": "Alifek#2409",
+        "challenges": {
+          "set": "Chayula",
+          "completed": 21,
+          "max": 40
+        },
+        "twitch": {
+          "name": "zsg_marksman"
+        }
+      }
+    },
+    {
+      "rank": 3,
+      "dead": true,
+      "public": true,
+      "character": {
+        "id": "24a852d3c4e0f6dad8edfa63f947a9e72aa9d3d7bc7268450fad844fb2cbaf8c",
+        "name": "twist_deez_turds_alkLFG",
+        "level": 100,
+        "class": "Juggernaut",
+        "experience": 4250334444,
+        "depth": {
+          "default": 65127,
+          "solo": 65127
+        }
+      },
+      "account": {
+        "name": "turdtwisterx#4882",
+        "challenges": {
+          "set": "ChayulaRuthless",
+          "completed": 4,
+          "max": 8
+        },
+        "twitch": {
+          "name": "turdtwisterx"
+        }
+      }
+    },
+    {
+      "rank": 4,
+      "dead": false,
+      "public": true,
+      "character": {
+        "id": "3141403a63e2803b47e5590db68abe76034a859b72935280a5db7abf6811f011",
+        "name": "Atleast_not_templar",
+        "level": 100,
+        "class": "Ascendant",
+        "experience": 4250334444
+      },
+      "account": {
+        "name": "Mikle#3761",
+        "challenges": {
+          "set": "Chayula",
+          "completed": 31,
+          "max": 40
+        },
+        "twitch": {
+          "name": "boo_poe"
+        }
+      }
+    },
+    {
+      "rank": 5,
+      "dead": false,
+      "public": true,
+      "character": {
+        "id": "10101838bdc68c232ec58f3c4eca49db1593286a2fcb8893f5188061197d3821",
+        "name": "RADAR_STAINING",
+        "level": 100,
+        "class": "Champion",
+        "experience": 4250334444
+      },
+      "account": {
+        "name": "radarsneers#2943",
+        "challenges": {
+          "set": "Chayula",
+          "completed": 8,
+          "max": 40
+        }
+      }
+    }
+  ]
+}
