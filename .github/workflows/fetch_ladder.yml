@@ -30,7 +30,7 @@ jobs:
           python-version: '3.12'
 
       - name: Run tracker
-        run: python tracker.py
+        run: python3 tracker.py
 
       - name: Commit and push changes
         run: |
