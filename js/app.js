@@ -800,3 +800,4 @@ var MD5 = function (d) { var r = M(V(Y(X(d), 8 * d.length))); return r.toLowerCa
         // Restore ladder interval toggle active state
         restoreToggleState('ladder-interval-toggle', 'data-interval', App.ladderInterval);
     });
+});
