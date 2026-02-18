@@ -1,27 +1,27 @@
 {
-  "last_updated": 1771387786,
+  "last_updated": 1771393038,
   "league": "Hardcore Phrecia 2.0",
   "total_players": 200,
-  "players_updated": 3,
+  "players_updated": 2,
   "class_distribution": {
-    "Scavenger": 1782,
+    "Scavenger": 1781,
     "Behemoth": 682,
-    "Harbinger": 496,
-    "Ancestral Commander": 5440,
+    "Harbinger": 495,
+    "Ancestral Commander": 5439,
     "Aristocrat": 1710,
-    "Herald": 3311,
+    "Herald": 3309,
     "Polytheist": 604,
-    "Daughter of Oshabi": 630,
+    "Daughter of Oshabi": 639,
     "Surfcaster": 522,
-    "Paladin": 1509,
+    "Paladin": 1508,
     "Servant of Arakaali": 1204,
     "Architect of Chaos": 261,
     "Gambler": 333,
-    "Whisperer": 184,
-    "Bog Shaman": 807,
+    "Whisperer": 183,
+    "Bog Shaman": 806,
     "Wildspeaker": 246,
     "Puppeteer": 258,
     "Blind Prophet": 115,
-    "Antiquarian": 6
+    "Antiquarian": 5
   }
 }
